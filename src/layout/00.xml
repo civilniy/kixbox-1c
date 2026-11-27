@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SchemaFile xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<dataCompositionSchema xmlns="http://v8.1c.ru/8.1/data-composition-system/schema">
+		<dataSource>
+			<name>ИсточникДанных1</name>
+			<dataSourceType>Local</dataSourceType>
+		</dataSource>
+		<dataSet xsi:type="DataSetQuery">
+			<name>НаборДанных1</name>
+			<field xsi:type="DataSetFieldField">
+				<dataPath>Номенклатура</dataPath>
+				<field>Номенклатура</field>
+				<role>
+					<dimension xmlns="http://v8.1c.ru/8.1/data-composition-system/common">true</dimension>
+				</role>
+				<appearance/>
+			</field>
+			<field xsi:type="DataSetFieldField">
+				<dataPath>ХарактеристикаНоменклатуры</dataPath>
+				<field>ХарактеристикаНоменклатуры</field>
+				<appearance/>
+			</field>
+			<field xsi:type="DataSetFieldField">
+				<dataPath>Склад</dataPath>
+				<field>Склад</field>
+				<appearance/>
+			</field>
+			<field xsi:type="DataSetFieldField">
+				<dataPath>ТипЦен</dataPath>
+				<field>ТипЦен</field>
+				<appearance/>
+			</field>
+			<field xsi:type="DataSetFieldField">
+				<dataPath>ДокументПрихода</dataPath>
+				<field>ДокументПрихода</field>
+				<appearance/>
+			</field>
+			<field xsi:type="DataSetFieldField">
+				<dataPath>Цвет</dataPath>
+				<field>Цвет</field>
+				<appearance/>
+			</field>
+			<field xsi:type="DataSetFieldField">
+				<dataPath>Остаток</dataPath>
+				<field>Остаток</field>
+				<title xmlns:d5p1="http://v8.1c.ru/8.1/data/core" xsi:type="d5p1:LocalStringType">
+					<d5p1:item>
+						<d5p1:lang>ru</d5p1:lang>
+						<d5p1:content>Остаток</d5p1:content>
+					</d5p1:item>
+				</title>
+				<appearance/>
+			</field>
+			<field xsi:type="DataSetFieldField">
+				<dataPath>Характеристика</dataPath>
+				<field>Характеристика</field>
+				<title xmlns:d5p1="http://v8.1c.ru/8.1/data/core" xsi:type="d5p1:LocalStringType">
+					<d5p1:item>
+						<d5p1:lang>ru</d5p1:lang>
+						<d5p1:content>Характеристика</d5p1:content>
+					</d5p1:item>
+				</title>
+				<role>
+					<dimension xmlns="http://v8.1c.ru/8.1/data-composition-system/common">true</dimension>
+				</role>
+				<appearance/>
+			</field>
+			<field xsi:type="DataSetFieldField">
+				<dataPath>Штрихкод</dataPath>
+				<field>Штрихкод</field>
+				<role>
+					<dimension xmlns="http://v8.1c.ru/8.1/data-composition-system/common">true</dimension>
+				</role>
+				<appearance/>
+			</field>
+			<field xsi:type="DataSetFieldField">
+				<dataPath>ЦенаДоСкидки</dataPath>
+				<field>ЦенаДоСкидки</field>
+				<title xmlns:d5p1="http://v8.1c.ru/8.1/data/core" xsi:type="d5p1:LocalStringType">
+					<d5p1:item>
+						<d5p1:lang>ru</d5p1:lang>
+						<d5p1:content>ЦенаДоСкидки</d5p1:content>
+					</d5p1:item>
+				</title>
+				<appearance/>
+			</field>
+			<field xsi:type="DataSetFieldField">
+				<dataPath>Цена</dataPath>
+				<field>Цена</field>
+				<title xmlns:d5p1="http://v8.1c.ru/8.1/data/core" xsi:type="d5p1:LocalStringType">
+					<d5p1:item>
+						<d5p1:lang>ru</d5p1:lang>
+						<d5p1:content>Цена</d5p1:content>
+					</d5p1:item>
+				</title>
+				<appearance/>
+			</field>
+			<dataSource>ИсточникДанных1</dataSource>
+			<query>ВЫБРАТЬ
+	ОстаткиТоваровОстатки.Номенклатура КАК Номенклатура,
+	ОстаткиТоваровОстатки.ХарактеристикаНоменклатуры КАК Характеристика,
+	ВЫБОР
+		КОГДА &amp;ОсновнойСклад = ЗНАЧЕНИЕ(Справочник.Склады.ПустаяСсылка)
+			ТОГДА ОстаткиТоваровОстатки.Склад
+		ИНАЧЕ &amp;ОсновнойСклад
+	КОНЕЦ КАК Склад,
+	ВЫБОР
+		КОГДА ЕСТЬNULL(ЦеныНоменклатурыПоЦветуСрезПоследних.Цена, 0) &gt; 0
+			ТОГДА ЦеныНоменклатурыПоЦветуСрезПоследних.Цена
+		ИНАЧЕ ЕСТЬNULL(ЦеныНоменклатурыБезЦветаСрезПоследних.Цена, 0)
+	КОНЕЦ КАК ЦенаДоСкидки,
+	ВЫБОР
+		КОГДА ЕСТЬNULL(ЦеныНоменклатурыПоЦветуСрезПоследних.Цена, 0) &gt; 0
+			ТОГДА ЦеныНоменклатурыПоЦветуСрезПоследних.Цена * (100 - ЕСТЬNULL(СкидкиМагазиновСрезПоследних.Скидка, 0)) / 100
+		ИНАЧЕ ЕСТЬNULL(ЦеныНоменклатурыБезЦветаСрезПоследних.Цена, 0) * (100 - ЕСТЬNULL(СкидкиМагазиновСрезПоследних.Скидка, 0)) / 100
+	КОНЕЦ КАК Цена,
+	ОстаткиТоваровОстатки.ОстатокОстаток КАК Остаток,
+	Штрихкоды.Штрихкод КАК Штрихкод
+ПОМЕСТИТЬ врОстатки
+ИЗ
+	РегистрНакопления.ОстаткиТоваров.Остатки(, Склад В (&amp;Склады)) КАК ОстаткиТоваровОстатки
+		ЛЕВОЕ СОЕДИНЕНИЕ РегистрСведений.ЦеныНоменклатурыПоЦвету.СрезПоследних(, ТипЦен = &amp;ВидЦены) КАК ЦеныНоменклатурыПоЦветуСрезПоследних
+		ПО ОстаткиТоваровОстатки.Номенклатура = ЦеныНоменклатурыПоЦветуСрезПоследних.Номенклатура
+			И ОстаткиТоваровОстатки.ХарактеристикаНоменклатуры.Цвет = ЦеныНоменклатурыПоЦветуСрезПоследних.Цвет
+		ЛЕВОЕ СОЕДИНЕНИЕ РегистрСведений.ЦеныНоменклатурыБезЦвета.СрезПоследних(, ТипЦен = &amp;ВидЦены) КАК ЦеныНоменклатурыБезЦветаСрезПоследних
+		ПО ОстаткиТоваровОстатки.Номенклатура = ЦеныНоменклатурыБезЦветаСрезПоследних.Номенклатура
+		ЛЕВОЕ СОЕДИНЕНИЕ РегистрСведений.Штрихкоды КАК Штрихкоды
+		ПО ОстаткиТоваровОстатки.Номенклатура = Штрихкоды.Владелец
+			И ОстаткиТоваровОстатки.ХарактеристикаНоменклатуры = Штрихкоды.ХарактеристикаНоменклатуры
+		ЛЕВОЕ СОЕДИНЕНИЕ РегистрСведений.СкидкиМагазинов.СрезПоследних КАК СкидкиМагазиновСрезПоследних
+		ПО ОстаткиТоваровОстатки.Склад = СкидкиМагазиновСрезПоследних.Склад
+			И ОстаткиТоваровОстатки.Номенклатура = СкидкиМагазиновСрезПоследних.Номенклатура
+			И ОстаткиТоваровОстатки.ХарактеристикаНоменклатуры.Цвет = СкидкиМагазиновСрезПоследних.Цвет
+;
+
+////////////////////////////////////////////////////////////////////////////////
+ВЫБРАТЬ
+	врОстатки.Номенклатура КАК Номенклатура,
+	врОстатки.Характеристика КАК Характеристика,
+	врОстатки.Склад КАК Склад,
+	СРЕДНЕЕ(врОстатки.ЦенаДоСкидки) КАК ЦенаДоСкидки,
+	СРЕДНЕЕ(врОстатки.Цена) КАК Цена,
+	СУММА(врОстатки.Остаток) КАК Остаток,
+	врОстатки.Штрихкод КАК Штрихкод
+ИЗ
+	врОстатки КАК врОстатки
+
+СГРУППИРОВАТЬ ПО
+	врОстатки.Номенклатура,
+	врОстатки.Характеристика,
+	врОстатки.Склад,
+	врОстатки.Штрихкод		</query>
+		</dataSet>
+		<parameter>
+			<name>Период</name>
+			<title xmlns:d4p1="http://v8.1c.ru/8.1/data/core" xsi:type="d4p1:LocalStringType">
+				<d4p1:item>
+					<d4p1:lang>ru</d4p1:lang>
+					<d4p1:content>Период</d4p1:content>
+				</d4p1:item>
+			</title>
+			<valueType>
+				<Type xmlns="http://v8.1c.ru/8.1/data/core">xs:dateTime</Type>
+				<DateQualifiers xmlns="http://v8.1c.ru/8.1/data/core">
+					<DateFractions>DateTime</DateFractions>
+				</DateQualifiers>
+			</valueType>
+			<value xsi:type="xs:dateTime">0001-01-01T00:00:00</value>
+			<useRestriction>false</useRestriction>
+		</parameter>
+		<parameter>
+			<name>ВидЦены</name>
+			<title xmlns:d4p1="http://v8.1c.ru/8.1/data/core" xsi:type="d4p1:LocalStringType">
+				<d4p1:item>
+					<d4p1:lang>ru</d4p1:lang>
+					<d4p1:content>Вид цены</d4p1:content>
+				</d4p1:item>
+			</title>
+			<valueType>
+				<Type xmlns="http://v8.1c.ru/8.1/data/core" xmlns:d5p1="http://v8.1c.ru/8.1/data/enterprise/current-config">d5p1:CatalogRef.ТипыЦенНоменклатуры</Type>
+			</valueType>
+			<value xsi:nil="true"/>
+			<useRestriction>true</useRestriction>
+		</parameter>
+		<parameter>
+			<name>Склады</name>
+			<title xmlns:d4p1="http://v8.1c.ru/8.1/data/core" xsi:type="d4p1:LocalStringType">
+				<d4p1:item>
+					<d4p1:lang>ru</d4p1:lang>
+					<d4p1:content>Склады</d4p1:content>
+				</d4p1:item>
+			</title>
+			<valueType>
+				<Type xmlns="http://v8.1c.ru/8.1/data/core" xmlns:d5p1="http://v8.1c.ru/8.1/data/enterprise/current-config">d5p1:CatalogRef.Склады</Type>
+			</valueType>
+			<value xsi:nil="true"/>
+			<useRestriction>true</useRestriction>
+		</parameter>
+		<parameter>
+			<name>ОсновнойСклад</name>
+			<title xmlns:d4p1="http://v8.1c.ru/8.1/data/core" xsi:type="d4p1:LocalStringType">
+				<d4p1:item>
+					<d4p1:lang>ru</d4p1:lang>
+					<d4p1:content>Основной склад</d4p1:content>
+				</d4p1:item>
+			</title>
+			<valueType>
+				<Type xmlns="http://v8.1c.ru/8.1/data/core" xmlns:d5p1="http://v8.1c.ru/8.1/data/enterprise/current-config">d5p1:CatalogRef.Склады</Type>
+			</valueType>
+			<value xsi:nil="true"/>
+			<useRestriction>true</useRestriction>
+		</parameter>
+		<settingsVariant>
+			<name xmlns="http://v8.1c.ru/8.1/data-composition-system/settings">Основной</name>
+			<presentation xmlns="http://v8.1c.ru/8.1/data-composition-system/settings" xsi:type="xs:string">Основной</presentation>
+		</settingsVariant>
+		<settingsVariant>
+			<name xmlns="http://v8.1c.ru/8.1/data-composition-system/settings">ВыгрузкаГрупп</name>
+			<presentation xmlns="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:d4p1="http://v8.1c.ru/8.1/data/core" xsi:type="d4p1:LocalStringType">
+				<d4p1:item>
+					<d4p1:lang>ru</d4p1:lang>
+					<d4p1:content>Выгрузка групп</d4p1:content>
+				</d4p1:item>
+			</presentation>
+		</settingsVariant>
+		<settingsVariant>
+			<name xmlns="http://v8.1c.ru/8.1/data-composition-system/settings">ТаблицаНоменклатураХарактеристика</name>
+			<presentation xmlns="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:d4p1="http://v8.1c.ru/8.1/data/core" xsi:type="d4p1:LocalStringType">
+				<d4p1:item>
+					<d4p1:lang>ru</d4p1:lang>
+					<d4p1:content>Таблица номенклатура характеристика</d4p1:content>
+				</d4p1:item>
+			</presentation>
+		</settingsVariant>
+		<settingsVariant>
+			<name xmlns="http://v8.1c.ru/8.1/data-composition-system/settings">ВыгрузкаОстатков</name>
+			<presentation xmlns="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:d4p1="http://v8.1c.ru/8.1/data/core" xsi:type="d4p1:LocalStringType">
+				<d4p1:item>
+					<d4p1:lang>ru</d4p1:lang>
+					<d4p1:content>Выгрузка остатков</d4p1:content>
+				</d4p1:item>
+			</presentation>
+		</settingsVariant>
+		<settingsVariant>
+			<name xmlns="http://v8.1c.ru/8.1/data-composition-system/settings">ВыгрузкаЦен</name>
+			<presentation xmlns="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:d4p1="http://v8.1c.ru/8.1/data/core" xsi:type="d4p1:LocalStringType">
+				<d4p1:item>
+					<d4p1:lang>ru</d4p1:lang>
+					<d4p1:content>Выгрузка цен</d4p1:content>
+				</d4p1:item>
+			</presentation>
+		</settingsVariant>
+	</dataCompositionSchema>
+</SchemaFile>
